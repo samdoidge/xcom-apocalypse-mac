@@ -31,13 +31,7 @@ cp /path/to/XCOM.cue data/cd.iso
 cp /path/to/XCOM.BIN data/
 ```
 
-or keep the filenames and point CMake at the cue sheet:
-
-```sh
-cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCD_PATH=/path/to/XCOM.cue ..
-```
-
-Point `CD_PATH` at the `.cue` file, not the directory containing it. The image must include the audio tracks; without them the game builds but starts with sound disabled.
+or keep the filenames and add `-DCD_PATH` to the configure command below. Point `CD_PATH` at the `.cue` file, not the directory containing it. The image must include the audio tracks; without them the game builds but starts with sound disabled.
 
 Then:
 
@@ -45,11 +39,13 @@ Then:
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+# GOG filenames: add -DCD_PATH=/path/to/XCOM.cue to the line above
 make -j"$(sysctl -n hw.ncpu)"
+cd ..
 open ./build/bin/OpenApoc.app
 ```
 
-OpenApoc expects the game data in `data/` next to the executable, so run it from the build directory the first time. The launcher lets you point at the data folder if you move it.
+OpenApoc expects the `data/` folder in the current working directory, so run it from the repository root (the folder containing `data/`), not from `build/`. The launcher lets you point at the data folder if you move it.
 
 ## Notes
 

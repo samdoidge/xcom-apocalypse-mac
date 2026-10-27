@@ -67,7 +67,7 @@ Tune it live with `Cmd`+`F11` / `Cmd`+`F12`, then write down the value that feel
 
 Start windowed (`fullscreen = false`), drag the window to the display you want, then press `Alt`+`Enter`. macOS remembers the arrangement, not DOSBox.
 
-The `sharp` shader is the right default for 640×480-era graphics. If you prefer softer scaling, remove the `glshader` line or try another shader from `--list-glshaders`.
+The `sharp` shader is the right default for 640×480-era graphics. If you prefer softer scaling, remove the `shader` line (0.83) or the `glshader` line (0.82). List shaders with `--list-shaders` (0.83) or `--list-glshaders` (0.82).
 
 ## macOS says "DOSBox Staging is damaged"
 
@@ -91,7 +91,7 @@ open -na "DOSBox Staging" --args -conf "$HOME/Games/XCOMApocalypse/dosbox.conf"
 
 ## I launched it twice and lost progress
 
-Each launch starts a new DOSBox instance and the game writes saves at exit. Close the game before launching another instance. If a save is corrupted, restore `SAVEGAME` from Time Machine; the files are plain and versioned by slot.
+Each launch starts a new DOSBox instance and both share the same `SAVEGAME` folder. Close one before launching another; concurrent instances can overwrite the same slots. If a save is corrupted, restore `SAVEGAME` from Time Machine; the files are plain and versioned by slot.
 
 ## Installing from GOG
 
@@ -100,27 +100,31 @@ brew install innoextract
 innoextract -d gog setup_xcom_apocalypse_*.exe
 ```
 
-The game lands under `gog/app`. Either point `GAME_DIR` at that folder:
+The extracted `app/` contains `XCOMA/` (game), `CD/` (cue/bin), and `DOSBOX/` (GOG's bundled emulator, unused here). Let the script handle the layout:
 
 ```sh
-GAME_DIR="$PWD/gog/app" ./scripts/setup.sh
+./scripts/setup.sh --source gog/app
 ```
 
-or copy it into place:
+or copy both folders:
 
 ```sh
-cp -R gog/app/. "$HOME/Games/XCOMApocalypse/"
+mkdir -p "$HOME/Games/XCOMApocalypse/CD"
+cp -R gog/app/XCOMA/. "$HOME/Games/XCOMApocalypse/"
+cp -R gog/app/CD/. "$HOME/Games/XCOMApocalypse/CD/"
 ```
 
-Steam sells the same DOS data. There is no macOS Steam client build of the game; use the installed data files, not the Windows client.
+Then run `./scripts/setup.sh` without `--source` to write the config and app.
+
+Steam sells the same DOS data, but the build is Windows-only. You need a Windows PC (or CrossOver) to install it once; copy the data files, not the client.
 
 ## Config warnings after upgrading DOSBox Staging
 
 - `Invalid option 'shader'` on 0.82 or earlier: use `glshader = sharp`.
 - `Deprecated setting 'glshader'` on 0.83: use `shader = sharp`.
 - `'imgmount' is deprecated` on 0.83: use `mount D "...cue" -t cdrom`.
-- `Invalid 'cpu_cycles_protected' setting` on 0.82: delete that line; it only exists on 0.83+.
-- `cpu_cycles_protected` warning on 0.83 with `cpu_cycles = max`: add `cpu_cycles_protected = max` under `[cpu]`.
+- `Invalid 'cpu_cycles_protected' setting` on 0.81 or earlier: use `cycles = max`; the `cpu_cycles*` settings were introduced in 0.82.
+- `Invalid 'cpu_cycles_protected' setting: '60000'` on 0.83 with `cpu_cycles = max`: add `cpu_cycles_protected = max` under `[cpu]`. The 60,000-cycle default conflicts with `max` and falls back to `auto`.
 
 Re-running `setup.sh` does not rewrite an existing config; delete `dosbox.conf` first if you want the script to regenerate it for the current version.
 

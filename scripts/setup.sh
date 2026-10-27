@@ -50,14 +50,23 @@ version_line="$("$DOSBOX_BIN" --version 2>/dev/null | { IFS= read -r line; print
 version="${version_line#*version }"
 version="${version%% *}"
 
+cpu_key=cpu_cycles
+protected_cycles=""
 shader_key=glshader
 cd_mount=imgmount
-protected_cycles=""
-if [[ "$version" =~ ^([0-9]+)\.([0-9]+) ]] \
-  && { (( BASH_REMATCH[1] > 0 )) || (( BASH_REMATCH[1] == 0 && BASH_REMATCH[2] >= 83 )); }; then
-  shader_key=shader
-  cd_mount=mount
-  protected_cycles="cpu_cycles_protected = max"
+
+if [[ "$version" =~ ^([0-9]+)\.([0-9]+) ]]; then
+  major=$((10#${BASH_REMATCH[1]}))
+  minor=$((10#${BASH_REMATCH[2]}))
+  if (( major > 0 || (major == 0 && minor >= 82) )); then
+    protected_cycles="cpu_cycles_protected = max"
+  else
+    cpu_key=cycles
+  fi
+  if (( major > 0 || (major == 0 && minor >= 83) )); then
+    shader_key=shader
+    cd_mount=mount
+  fi
 fi
 
 mkdir -p "$GAME_DIR" "$(dirname "$APP_PATH")" "$HOME/Movies/XCOMApocalypse"
@@ -65,7 +74,9 @@ mkdir -p "$GAME_DIR" "$(dirname "$APP_PATH")" "$HOME/Movies/XCOMApocalypse"
 if [[ -n "$SOURCE" ]]; then
   [[ -e "$SOURCE" ]] || die "source not found: $SOURCE"
   if [[ -d "$SOURCE" ]]; then
-    src="$SOURCE"
+    exe="$(find "$SOURCE" -maxdepth 3 -iname 'XCOMAPOC.EXE' -print -quit)"
+    [[ -n "$exe" ]] || die "could not find XCOMAPOC.EXE inside $SOURCE"
+    src="$(dirname "$exe")"
   elif [[ -f "$SOURCE" ]]; then
     command -v innoextract >/dev/null 2>&1 || brew install innoextract
     tmp="$(mktemp -d)"
@@ -84,6 +95,16 @@ if [[ -n "$SOURCE" ]]; then
   else
     say "Copying game files to $GAME_DIR..."
     cp -R "$src"/. "$GAME_DIR"/
+  fi
+
+  # GOG keeps the disc image in a sibling CD/ folder, not next to the game files.
+  gog_root="$(dirname "$src")"
+  gog_cue="$(find "$gog_root/CD" -maxdepth 1 -iname '*.cue' -print -quit 2>/dev/null || true)"
+  existing_cue="$(find "$GAME_DIR" -maxdepth 3 -iname '*.cue' -print -quit 2>/dev/null || true)"
+  if [[ -n "$gog_cue" && -z "$existing_cue" ]]; then
+    say "Copying CD image to $GAME_DIR/CD..."
+    mkdir -p "$GAME_DIR/CD"
+    cp -R "$gog_root/CD"/. "$GAME_DIR/CD"/
   fi
 fi
 
@@ -110,7 +131,7 @@ machine = svga_s3
 memsize = 16
 
 [cpu]
-cpu_cycles = max
+$cpu_key = max
 EOF
     if [[ -n "$protected_cycles" ]]; then
       printf '%s\n' "$protected_cycles"

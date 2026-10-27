@@ -13,11 +13,11 @@ Play the 1997 original — not a remake — on a modern Mac with DOSBox Staging.
 
 | Option | State | Pick it when |
 | --- | --- | --- |
-| **DOSBox Staging** (this guide) | Runs the original DOS game, natively on Apple Silicon | You want the real 1997 game with minimal fuss |
+| **DOSBox Staging** (this guide) | Runs the original DOS game in a native Apple Silicon build of DOSBox Staging | You want the real 1997 game with minimal fuss |
 | [OpenApoc](https://github.com/OpenApoc/OpenApoc) | Open-source engine rewrite; alpha; reported black-window bug on Apple Silicon | You want widescreen, 60 fps, mods, XML saves — and can build it |
-| Windows VM / Whisky | The GOG Windows build inside an emulator | You already have a VM and no interest in DOSBox |
+| CrossOver / Windows VM | The GOG Windows build in a Wine wrapper or VM | You already have one and no interest in DOSBox |
 
-X-COM: Apocalypse was never ported to macOS. The GOG release is the DOS game wrapped in a Windows installer; the data files inside are what you need. DOSBox Staging runs those files natively and gives you a fullscreen, correctly-timed game with working audio.
+X-COM: Apocalypse was never ported to macOS. The GOG release is the DOS game wrapped in a Windows installer; the data files inside are what you need. DOSBox Staging (itself a native Universal binary) emulates a DOS PC and runs those files, giving you a fullscreen, correctly-timed game with working audio.
 
 ## Quick start
 
@@ -28,7 +28,7 @@ cd xcom-apocalypse-mac
 ./scripts/setup.sh --source "/path/to/folder/with/XCOMAPOC.EXE"
 ```
 
-`setup.sh` copies the game to `~/Games/XCOMApocalypse`, writes `dosbox.conf`, and builds `~/Applications/X-COM Apocalypse.app`. Run it without `--source` if the game is already in that folder — it will regenerate the config and app wrapper. Pass a GOG `setup_xcom_apocalypse_*.exe` and the script unpacks it with `innoextract`.
+`setup.sh` copies the game to `~/Games/XCOMApocalypse`, writes `dosbox.conf`, and builds `~/Applications/X-COM Apocalypse.app`. Run it without `--source` if the game is already in that folder — it rebuilds the app wrapper and keeps the existing config (delete `dosbox.conf` to regenerate it). Pass a GOG `setup_xcom_apocalypse_*.exe` or the extracted `gog/app` folder and the script handles the layout.
 
 ## Manual setup
 
@@ -46,8 +46,20 @@ Any folder works. This guide uses:
 └── SAVEGAME/          # created by the game
 ```
 
-- **Own the CD?** Rip the disc to BIN/CUE, keep both files together, and point the config at the `.cue`.
-- **GOG?** `brew install innoextract`, then `innoextract -d gog setup_xcom_apocalypse_*.exe`. Copy the contents of the extracted `app/` folder into `~/Games/XCOMApocalypse`. Move the `.cue`/`.bin` pair into `CD/` if you want to match this layout.
+- **Own the CD?** Apple Silicon Macs have no optical drive, so you need an external USB drive and a BIN/CUE ripper. `bchunk` converts an existing BIN/CUE but does not rip. Keep both files together and point the config at the `.cue`.
+- **GOG?** `brew install innoextract`, then `innoextract -d gog setup_xcom_apocalypse_*.exe`. The extracted `app/` contains `XCOMA/` (game files), `CD/` (cue/bin), and `DOSBOX/` (GOG's bundled emulator, unused here). Let the script handle it:
+
+  ```sh
+  ./scripts/setup.sh --source gog/app
+  ```
+
+  Or copy the two folders yourself:
+
+  ```sh
+  mkdir -p ~/Games/XCOMApocalypse/CD
+  cp -R gog/app/XCOMA/. ~/Games/XCOMApocalypse/
+  cp -R gog/app/CD/. ~/Games/XCOMApocalypse/CD/
+  ```
 - The `.cue` must reference the `.bin` by the exact filename sitting next to it. If you rename one, edit the `FILE` line in the `.cue`.
 
 ### 2. Install DOSBox Staging
@@ -94,7 +106,7 @@ xcomapoc.exe
 exit
 ```
 
-> **DOSBox Staging 0.82 and earlier:** use `glshader = sharp`, replace `mount D` with `imgmount D`, and delete the `cpu_cycles_protected` line. `setup.sh` detects the installed version and writes the right variant.
+> **DOSBox Staging 0.82:** use `glshader = sharp` and replace `mount D` with `imgmount D`; keep `cpu_cycles_protected = max`. **0.81 and earlier:** use `cycles = max`; the `cpu_cycles*` settings do not exist. `setup.sh` detects the installed version and writes the right variant.
 
 What matters:
 
@@ -103,7 +115,7 @@ What matters:
 | `machine = svga_s3` | The game's SVGA mode; matches GOG's own config |
 | `memsize = 16` | Plenty for DOS plus the game; more buys nothing |
 | `cpu_cycles = max` | Smooth real-time simulation on Apple Silicon. If the game runs too fast, use a fixed number such as `cpu_cycles = 60000` |
-| `cpu_cycles_protected = max` | Matches the protected-mode cycle setting on 0.83+, otherwise it warns and falls back to `auto` |
+| `cpu_cycles_protected = max` | Sets protected-mode cycles to `max`; available since 0.82. If omitted, protected mode defaults to 60,000 cycles, which conflicts with `cpu_cycles = max` on 0.83 and falls back to `auto` |
 | `shader = sharp` | Crisp upscaling instead of blurry bilinear |
 | `sbtype = sb16`, `irq = 7` | Music and effects through the emulated Sound Blaster |
 | `mount D ... -t cdrom` | The game expects the disc mounted, even though it runs from the hard disk |
@@ -142,7 +154,7 @@ do shell script "open -na " & quoted form of "DOSBox Staging" & " --args -conf "
 | `Cmd`+`F9` | Shut down DOSBox |
 | `Cmd`+`F11` / `Cmd`+`F12` | Decrease / increase CPU cycles |
 
-Quit through the game's own menu so it saves. `Cmd`+`F9` kills the emulator.
+Save in-game first; `Cmd`+`F9` kills the emulator without saving.
 
 ### Saves
 
