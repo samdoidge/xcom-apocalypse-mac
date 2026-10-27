@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <rect width="1280" height="640" fill="#0d1117"/>
+  <g stroke="#1f6feb" stroke-opacity="0.12">
+    <path d="M0 80h1280M0 160h1280M0 240h1280M0 320h1280M0 400h1280M0 480h1280M0 560h1280"/>
+    <path d="M80 0v640M160 0v640M240 0v640M320 0v640M400 0v640M480 0v640M560 0v640M640 0v640M720 0v640M800 0v640M880 0v640M960 0v640M1040 0v640M1120 0v640M1200 0v640"/>
+  </g>
+
+  <text x="80" y="120" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="22" letter-spacing="3">1997 · DOS · MACOS</text>
+
+  <text x="80" y="260" fill="#e6edf3" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="78" font-weight="700" letter-spacing="2">X-COM: APOCALYPSE</text>
+  <text x="80" y="345" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="54" font-weight="700">on macOS</text>
+
+  <rect x="80" y="400" width="1120" height="2" fill="#30363d"/>
+  <text x="80" y="460" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28">DOSBox Staging setup · Apple Silicon · native fullscreen</text>
+  <text x="80" y="505" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24">No game data included. Own the game, then run it.</text>
+
+  <text x="80" y="580" fill="#58a6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24">github.com/samdoidge/xcom-apocalypse-mac</text>
+</svg>
