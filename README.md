@@ -14,7 +14,7 @@ Play the 1997 original — not a remake — on a modern Mac with DOSBox Staging.
 | Option | State | Pick it when |
 | --- | --- | --- |
 | **DOSBox Staging** (this guide) | Runs the original DOS game, natively on Apple Silicon | You want the real 1997 game with minimal fuss |
-| [OpenApoc](https://github.com/OpenApoc/OpenApoc) | Open-source engine rewrite, alpha, builds from source | You want widescreen, 60 fps, mods, XML saves |
+| [OpenApoc](https://github.com/OpenApoc/OpenApoc) | Open-source engine rewrite; alpha; reported black-window bug on Apple Silicon | You want widescreen, 60 fps, mods, XML saves — and can build it |
 | Windows VM / Whisky | The GOG Windows build inside an emulator | You already have a VM and no interest in DOSBox |
 
 X-COM: Apocalypse was never ported to macOS. The GOG release is the DOS game wrapped in a Windows installer; the data files inside are what you need. DOSBox Staging runs those files natively and gives you a fullscreen, correctly-timed game with working audio.
@@ -164,7 +164,7 @@ More detail: [docs/troubleshooting.md](docs/troubleshooting.md).
 
 ## OpenApoc (native rewrite)
 
-[OpenApoc](https://github.com/OpenApoc/OpenApoc) reimplements the engine in C++/SDL2: widescreen, 60 fps, mods, XML save editing. It still needs the original data and is alpha. macOS builds from source; steps in [docs/openapoc.md](docs/openapoc.md).
+[OpenApoc](https://github.com/OpenApoc/OpenApoc) reimplements the engine in C++/SDL2: widescreen, 60 fps, mods, XML save editing. It still needs the original data and is alpha. macOS builds from source, but the GL2 renderer has a reported black-window bug on Apple Silicon ([#1636](https://github.com/OpenApoc/OpenApoc/pull/1636)); steps and caveats in [docs/openapoc.md](docs/openapoc.md).
 
 ## Legal
 
