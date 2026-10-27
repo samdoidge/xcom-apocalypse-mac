@@ -5,7 +5,7 @@
 
 Play the 1997 original — not a remake — on a modern Mac with DOSBox Staging. Native Universal binary, fullscreen, Sound Blaster audio, and save files that live in a folder you can back up.
 
-**Verified on** macOS 26 (Apple Silicon) with DOSBox Staging 0.82.2 and 0.83.0. Intel Macs work too.
+**Tested with** macOS 26 (Apple Silicon) and DOSBox Staging 0.82.2. The config is also validated against 0.83.0. Intel Macs work too.
 
 **No game files are included.** You need to own X-COM: Apocalypse.
 
