@@ -19,6 +19,8 @@ Play the 1997 original — not a remake — on a modern Mac with DOSBox Staging.
 
 X-COM: Apocalypse was never ported to macOS. The GOG release is the DOS game wrapped in a Windows installer; the data files inside are what you need. DOSBox Staging (itself a native Universal binary) emulates a DOS PC and runs those files, giving you a fullscreen, correctly-timed game with working audio.
 
+![X-COM: Apocalypse running in DOSBox Staging on macOS](assets/screenshots/xcom-apocalypse-intro.png)
+
 ## Quick start
 
 ```sh
